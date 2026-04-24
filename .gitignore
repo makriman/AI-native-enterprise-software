@@ -8,6 +8,7 @@ coverage/
 .env.*
 !.env.example
 !**/.env.example
+!**/.env.server.example
 *.log
 *.tsbuildinfo
 artifacts/

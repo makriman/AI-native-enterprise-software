@@ -1,41 +1,30 @@
 version: "3.9"
 
-name: odoo-ai-edition
+name: aircrm
 
 services:
-  reverse-proxy:
-    image: nginx:1.27-alpine
-    restart: unless-stopped
-    depends_on:
-      - ai-console
-      - control-api
-    ports:
-      - "8080:80"
-    volumes:
-      - ../nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-
   ai-console:
-    image: node:22-alpine
+    build:
+      context: ../../
+      dockerfile: infra/docker/node-service.Dockerfile
+      args:
+        APP_PACKAGE: "@oae/ai-console"
     restart: unless-stopped
-    working_dir: /workspace
-    command: >-
-      sh -lc "corepack enable && pnpm install && pnpm --filter @oae/ai-console dev"
     environment:
       CONTROL_API_URL: http://control-api:4000
-      NEXT_PUBLIC_CONTROL_API_URL: http://localhost:4000
-    volumes:
-      - ../../:/workspace
-    ports:
-      - "3000:3000"
+      NEXT_PUBLIC_CONTROL_API_URL: ""
     depends_on:
       - control-api
+    ports:
+      - "127.0.0.1:${AIRCRM_CONSOLE_PORT}:3000"
 
   control-api:
-    image: node:22-alpine
+    build:
+      context: ../../
+      dockerfile: infra/docker/node-service.Dockerfile
+      args:
+        APP_PACKAGE: "@oae/control-api"
     restart: unless-stopped
-    working_dir: /workspace
-    command: >-
-      sh -lc "corepack enable && pnpm install && pnpm --filter @oae/control-api dev"
     environment:
       PORT: 4000
       HOST: 0.0.0.0
@@ -45,63 +34,12 @@ services:
       DATABASE_URL: postgresql://${CONTROLPLANE_DB_USER}:${CONTROLPLANE_DB_PASSWORD}@controlplane-db:5432/${CONTROLPLANE_DB_NAME}
       REDIS_URL: redis://redis:6379
       S3_ENDPOINT: http://minio:9000
-    volumes:
-      - ../../:/workspace
-    ports:
-      - "4000:4000"
     depends_on:
       - controlplane-db
       - redis
       - minio
-
-  runner-supervisor:
-    image: node:22-alpine
-    restart: unless-stopped
-    working_dir: /workspace
-    command: >-
-      sh -lc "corepack enable && pnpm install && pnpm --filter @oae/runner-supervisor dev"
-    environment:
-      PORT: 4100
-      HOST: 0.0.0.0
-      RUNNER_WORKDIR_ROOT: /workspace/.runner-workspaces
-    volumes:
-      - ../../:/workspace
     ports:
-      - "4100:4100"
-
-  log-gateway:
-    image: node:22-alpine
-    restart: unless-stopped
-    working_dir: /workspace
-    command: >-
-      sh -lc "corepack enable && pnpm install && pnpm --filter @oae/log-gateway dev"
-    environment:
-      PORT: 4300
-      HOST: 0.0.0.0
-    volumes:
-      - ../../:/workspace
-    ports:
-      - "4300:4300"
-
-  edge-agent:
-    image: node:22-alpine
-    restart: unless-stopped
-    working_dir: /workspace
-    command: >-
-      sh -lc "corepack enable && pnpm install && pnpm --filter @oae/edge-agent dev"
-    environment:
-      CONTROL_API_URL: http://control-api:4000
-      WORKSPACE_ID: ws_default
-      AGENT_NAME: compose-edge-agent
-      AGENT_TOKEN: ${EDGE_AGENT_TOKEN}
-      POLL_INTERVAL_MS: 8000
-      EDGE_AGENT_WORKROOT: /workspace/.edge-agent
-    volumes:
-      - ../../:/workspace
-    profiles:
-      - edge
-    depends_on:
-      - control-api
+      - "127.0.0.1:${AIRCRM_API_PORT}:4000"
 
   controlplane-db:
     image: postgres:16-alpine
@@ -113,8 +51,6 @@ services:
     volumes:
       - controlplane-postgres-data:/var/lib/postgresql/data
       - ./controlplane-db-init:/docker-entrypoint-initdb.d:ro
-    ports:
-      - "5434:5432"
 
   redis:
     image: redis:7.4-alpine
@@ -122,8 +58,6 @@ services:
     command: ["redis-server", "--save", "", "--appendonly", "no"]
     volumes:
       - redis-data:/data
-    ports:
-      - "6379:6379"
 
   minio:
     image: minio/minio:RELEASE.2025-02-28T09-55-16Z
@@ -135,8 +69,8 @@ services:
     volumes:
       - minio-data:/data
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "127.0.0.1:${AIRCRM_MINIO_API_PORT}:9000"
+      - "127.0.0.1:${AIRCRM_MINIO_CONSOLE_PORT}:9001"
 
   odoo-db:
     image: postgres:16-alpine
@@ -147,8 +81,6 @@ services:
       POSTGRES_DB: postgres
     volumes:
       - odoo-postgres-data:/var/lib/postgresql/data
-    ports:
-      - "5433:5432"
 
   odoo:
     image: odoo:19.0
@@ -172,7 +104,7 @@ services:
       - ../../addons/test_support:/mnt/extra-addons/test_support
       - ../../upstream/odoo-community:/opt/odoo-community
     ports:
-      - "8069:8069"
+      - "127.0.0.1:${AIRCRM_ODOO_PORT}:8069"
 
 volumes:
   controlplane-postgres-data:

@@ -16,6 +16,6 @@ FROM node:22-alpine AS runtime
 RUN corepack enable
 WORKDIR /workspace
 ARG APP_PACKAGE
-COPY --from=deps /workspace /workspace
+COPY --from=build /workspace /workspace
 ENV NODE_ENV=production
 CMD ["sh", "-lc", "pnpm --filter ${APP_PACKAGE} start"]

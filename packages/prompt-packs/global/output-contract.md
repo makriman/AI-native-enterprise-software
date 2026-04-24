@@ -16,3 +16,4 @@ Each successful build must emit:
 - Include migration notes for schema-affecting changes.
 - Include ACL positive/negative tests where access is modified.
 - Include installation and upgrade validation output.
+- Do not include AI self-attribution or AI contributor credit in generated deliverables.

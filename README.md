@@ -6,7 +6,7 @@
 [![License: LGPL-3.0-or-later](https://img.shields.io/badge/license-LGPL--3.0--or--later-blue.svg)](LICENSE)
 [![Self Hosted](https://img.shields.io/badge/deploy-self--hosted-black.svg)](infra/compose/docker-compose.yml)
 
-Enterprise software is entering its Cursor moment.
+Enterprise software is entering its AI-native era.
 
 The first cloud-native giants did not win by putting old software on new servers. They won because the cloud changed what enterprise software could be: always on, always updated, browser-native, subscription-funded, and far easier to roll out than the old on-premise systems.
 
@@ -56,16 +56,16 @@ AI-native software will do the same.
 
 Enterprise software used to be configured by administrators and extended by implementation partners. The new model is governed AI implementation: business people describe outcomes, AI produces reviewable software artifacts, and the company keeps control through Git, tests, environments, approvals, audit logs, and rollback.
 
-Think:
+The era ahead combines software with a built-in implementation agency:
 
-- Cursor for revenue operations.
-- Cursor for HR operations.
-- Cursor for accounting workflows.
-- Cursor for customer onboarding.
-- Cursor for internal tools.
-- Cursor for the messy implementation work normally sold by agencies and consultants.
+- AI-native revenue operations delivery
+- AI-native HR operations delivery
+- AI-native accounting workflow delivery
+- AI-native customer onboarding delivery
+- AI-native internal tooling delivery
+- AI-native implementation execution that replaces slow agency loops
 
-Not a chatbot. Not a demo agent. A governed delivery system.
+Not a chatbot. Not a demo agent. A governed implementation and delivery system.
 
 ## What You Can Build
 
@@ -654,7 +654,7 @@ pnpm --filter @oae/ai-console dev
 ## Roadmap
 
 - Persistent database repositories for the Control API
-- Real managed Codex runner integration
+- Real managed implementation-runner integration
 - Hardened edge-agent execution
 - Sandbox provisioning
 - Staging and production deploy executors

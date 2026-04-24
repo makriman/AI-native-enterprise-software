@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 
-const CONTROL_API_URL = process.env.NEXT_PUBLIC_CONTROL_API_URL || "http://localhost:4000";
+const CONTROL_API_URL = process.env.NEXT_PUBLIC_CONTROL_API_URL || "";
 
 export function BuildComposerForm() {
   const [submitting, setSubmitting] = useState(false);
