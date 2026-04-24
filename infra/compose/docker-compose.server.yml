@@ -10,6 +10,9 @@ services:
       args:
         APP_PACKAGE: "@oae/ai-console"
     restart: unless-stopped
+    command: >-
+      sh -lc "cd /workspace/apps/ai-console &&
+      node node_modules/next/dist/bin/next start -p 3000"
     environment:
       CONTROL_API_URL: http://control-api:4000
       NEXT_PUBLIC_CONTROL_API_URL: ""
@@ -25,6 +28,7 @@ services:
       args:
         APP_PACKAGE: "@oae/control-api"
     restart: unless-stopped
+    command: ["node", "dist/apps/control-api/src/server.js"]
     environment:
       PORT: 4000
       HOST: 0.0.0.0
@@ -94,7 +98,7 @@ services:
     command: >-
       sh -lc "odoo --config=/etc/odoo/odoo.conf
       --db_host=odoo-db --db_port=5432 --db_user=$$ODOO_DB_USER
-      --db_password=$$ODOO_DB_PASSWORD --admin_passwd=$$ODOO_ADMIN_PASSWORD"
+      --db_password=$$ODOO_DB_PASSWORD --admin-passwd=$$ODOO_ADMIN_PASSWORD"
     volumes:
       - ./odoo-config/odoo.conf:/etc/odoo/odoo.conf:ro
       - odoo-filestore:/var/lib/odoo
