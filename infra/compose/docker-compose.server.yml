@@ -101,10 +101,11 @@ services:
       ODOO_DB_PASSWORD: ${ODOO_DB_PASSWORD}
       ODOO_ADMIN_PASSWORD: ${ODOO_ADMIN_PASSWORD}
     command: >-
-      sh -lc "odoo --config=/etc/odoo/odoo.conf
+      sh -lc "cp /etc/odoo/odoo.conf /tmp/odoo-runtime.conf
+      && printf '\nadmin_passwd = %s\n' \"$$ODOO_ADMIN_PASSWORD\" >> /tmp/odoo-runtime.conf
+      && odoo --config=/tmp/odoo-runtime.conf
       --db_host=odoo-db --db_port=5432 --db_user=$$ODOO_DB_USER
-      --db_password=$$ODOO_DB_PASSWORD
-      --admin_passwd=$$ODOO_ADMIN_PASSWORD"
+      --db_password=$$ODOO_DB_PASSWORD"
     volumes:
       - ./odoo-config/odoo.conf:/etc/odoo/odoo.conf:ro
       - odoo-filestore:/var/lib/odoo
