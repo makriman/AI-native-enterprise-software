@@ -244,8 +244,14 @@ The next major push is persistence, real runner isolation, deeper tests, deploym
 ### 1. Clone
 
 ```bash
-git clone https://github.com/makriman/AI-native-enterprise-software.git
+git clone --recurse-submodules https://github.com/makriman/AI-native-enterprise-software.git
 cd AI-native-enterprise-software
+```
+
+If you already cloned without submodules:
+
+```bash
+git submodule update --init --recursive
 ```
 
 ### 2. Bootstrap
