@@ -1,0 +1,14 @@
+profile: permissive_dev
+rules:
+  - id: upstream_edit_requires_elevation
+    action: block
+  - id: wildcard_acl_grant
+    action: warn
+  - id: superuser_id_usage
+    action: warn
+  - id: destructive_sql
+    action: block
+  - id: outbound_http_requires_allowlist
+    action: warn
+  - id: cron_without_coverage
+    action: warn

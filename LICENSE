@@ -1,0 +1,9 @@
+GNU LESSER GENERAL PUBLIC LICENSE
+Version 3, 29 June 2007
+
+Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
+
+This repository defaults to LGPL-3.0-or-later for Odoo-coupled code unless
+explicitly documented otherwise in module/service-level license metadata.
+
+For the full LGPL-3.0 text, see: https://www.gnu.org/licenses/lgpl-3.0.txt

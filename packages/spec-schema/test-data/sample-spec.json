@@ -1,0 +1,47 @@
+{
+  "kind": "odoo_customization",
+  "version": "1.0",
+  "workspace_id": "ws_123",
+  "instance_id": "inst_123",
+  "request": {
+    "title": "Partner onboarding workflow",
+    "business_goal": "Standardize partner onboarding with approvals and SLA reminders",
+    "source_prompt": "Build a partner onboarding workflow with approval, document collection, portal upload and SLA reminders.",
+    "attachments": []
+  },
+  "scope": {
+    "target_modules": ["contacts", "crm", "mail", "portal"],
+    "target_environments": ["sandbox", "staging", "production"]
+  },
+  "changes": {
+    "settings": [],
+    "models": [],
+    "fields": [],
+    "views": [],
+    "menus": [],
+    "actions": [],
+    "security": [],
+    "automations": [],
+    "reports": [],
+    "portal": [],
+    "controllers": [],
+    "connectors": [],
+    "imports": [],
+    "migrations": []
+  },
+  "risk": {
+    "level": "medium",
+    "reasons": [],
+    "approval_required": true,
+    "elevated": false
+  },
+  "tests": {
+    "required": ["install", "unit", "acl", "integration", "ui_smoke"]
+  },
+  "deliverables": {
+    "generate_module": true,
+    "generate_docs": true,
+    "generate_uat": true,
+    "deploy_to_sandbox": true
+  }
+}

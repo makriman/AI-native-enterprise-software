@@ -1,0 +1,13 @@
+{
+  "name": "@oae/prompt-packs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "echo 'prompt-packs: static assets'",
+    "dev": "echo 'prompt-packs: static assets'",
+    "lint": "echo 'prompt-packs: no lint step'",
+    "test": "echo 'prompt-packs: no tests'",
+    "typecheck": "echo 'prompt-packs: no typecheck'"
+  }
+}

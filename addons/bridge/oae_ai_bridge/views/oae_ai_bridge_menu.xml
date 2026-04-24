@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <menuitem id="menu_oae_ai_bridge_root" name="AI Edition" parent="base.menu_custom" sequence="85" groups="oae_ai_bridge.group_oae_ai_bridge_user"/>
+
+  <menuitem
+    id="menu_oae_ai_bridge_context_links"
+    name="Context Links"
+    parent="oae_ai_bridge.menu_oae_ai_bridge_root"
+    action="oae_ai_bridge.action_oae_ai_bridge_context_links"
+    sequence="10"
+    groups="oae_ai_bridge.group_oae_ai_bridge_user"
+  />
+
+  <menuitem
+    id="menu_oae_ai_bridge_open_console"
+    name="Open AI Console"
+    parent="oae_ai_bridge.menu_oae_ai_bridge_root"
+    action="oae_ai_bridge.action_oae_ai_bridge_open_console"
+    sequence="20"
+    groups="oae_ai_bridge.group_oae_ai_bridge_user"
+  />
+</odoo>

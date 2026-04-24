@@ -1,0 +1,6 @@
+{
+  "remote": "https://github.com/odoo/odoo.git",
+  "ref": "19.0",
+  "commit": "454d41e33b94ca8cbd0fe19bf9f602e56b6a366e",
+  "pinned_at": "2026-04-24T08:02:07Z"
+}

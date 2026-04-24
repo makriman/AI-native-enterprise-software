@@ -1,0 +1,4 @@
+[submodule "upstream/odoo-community"]
+	path = upstream/odoo-community
+	url = https://github.com/odoo/odoo.git
+	branch = 19.0

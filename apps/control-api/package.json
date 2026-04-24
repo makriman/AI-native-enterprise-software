@@ -1,0 +1,28 @@
+{
+  "name": "@oae/control-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/apps/control-api/src/server.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "echo 'control-api lint: pending full ruleset'",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.1.0",
+    "@oae/deployment": "workspace:*",
+    "@oae/policy-engine": "workspace:*",
+    "@oae/shared-types": "workspace:*",
+    "@oae/spec-compiler": "workspace:*",
+    "@oae/spec-schema": "workspace:*",
+    "fastify": "^5.3.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.3"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.3"
+  }
+}

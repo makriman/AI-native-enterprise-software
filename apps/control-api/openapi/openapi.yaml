@@ -1,0 +1,163 @@
+openapi: 3.1.0
+info:
+  title: OAE Control API
+  version: 1.0.0
+  description: Canonical control-plane API for Odoo AI Edition.
+servers:
+  - url: http://localhost:4000
+paths:
+  /api/v1/builds:
+    post:
+      summary: Create a build request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - workspace_id
+                - instance_id
+                - title
+                - prompt
+                - execution_mode
+                - deployment_path
+              properties:
+                workspace_id:
+                  type: string
+                instance_id:
+                  type: string
+                title:
+                  type: string
+                prompt:
+                  type: string
+                attachments:
+                  type: array
+                  items:
+                    type: string
+                execution_mode:
+                  type: string
+                  enum: [managed_api, chatgpt_edge]
+                deployment_path:
+                  type: array
+                  items:
+                    type: string
+                    enum: [dev, sandbox, staging, production]
+                risk_tolerance:
+                  type: string
+                  enum: [low, medium, high, critical]
+                auto_deploy_sandbox:
+                  type: boolean
+      responses:
+        '201':
+          description: Build accepted
+  /api/v1/builds/{build_id}:
+    get:
+      summary: Fetch build detail
+      parameters:
+        - in: path
+          name: build_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Build detail
+  /api/v1/builds/{build_id}/stream:
+    get:
+      summary: Stream build events
+      parameters:
+        - in: path
+          name: build_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: SSE stream
+  /api/v1/builds/{build_id}/approve:
+    post:
+      summary: Approve build
+      responses:
+        '200':
+          description: Approved
+  /api/v1/builds/{build_id}/reject:
+    post:
+      summary: Reject build
+      responses:
+        '200':
+          description: Rejected
+  /api/v1/builds/{build_id}/request-changes:
+    post:
+      summary: Request changes
+      responses:
+        '200':
+          description: Returned to scope review
+  /api/v1/builds/{build_id}/deploy:
+    post:
+      summary: Deploy build to environment
+      responses:
+        '201':
+          description: Deployment started
+  /api/v1/deployments/{deployment_id}/rollback:
+    post:
+      summary: Roll back deployment
+      responses:
+        '200':
+          description: Rolled back
+  /api/v1/connections/openai-api:
+    post:
+      summary: Register OpenAI API credentials
+      responses:
+        '201':
+          description: Connection created
+  /api/v1/connections/edge-agent/register:
+    post:
+      summary: Register edge runner agent
+      responses:
+        '201':
+          description: Agent registered
+  /api/v1/connections/edge-agent/heartbeat:
+    post:
+      summary: Edge agent heartbeat
+      responses:
+        '200':
+          description: Heartbeat accepted
+  /api/v1/connections/odoo-instance:
+    post:
+      summary: Register Odoo instance connection
+      responses:
+        '201':
+          description: Connection created
+  /api/v1/edge/jobs/enqueue:
+    post:
+      summary: Enqueue edge-runner job
+      responses:
+        '201':
+          description: Job queued
+  /api/v1/edge/jobs/next:
+    get:
+      summary: Claim next edge job
+      responses:
+        '200':
+          description: Job payload
+        '204':
+          description: No jobs available
+  /api/v1/edge/jobs/{job_id}/complete:
+    post:
+      summary: Complete edge job
+      responses:
+        '200':
+          description: Job completion accepted
+  /api/v1/instances/{instance_id}/drift/scan:
+    post:
+      summary: Start drift scan
+      responses:
+        '200':
+          description: Drift report started
+  /api/v1/drift/{drift_report_id}:
+    get:
+      summary: Retrieve drift report
+      responses:
+        '200':
+          description: Drift details

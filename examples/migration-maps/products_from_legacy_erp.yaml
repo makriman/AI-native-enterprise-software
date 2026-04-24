@@ -1,0 +1,22 @@
+source: legacy_products.csv
+target_model: product.template
+idempotency:
+  key: default_code
+  strategy: upsert
+mappings:
+  - source: sku
+    target: default_code
+  - source: product_name
+    target: name
+  - source: category
+    target: categ_id
+    transform: category_lookup_or_create
+  - source: list_price
+    target: list_price
+    transform: decimal
+validation:
+  required:
+    - sku
+    - product_name
+quarantine:
+  enabled: true

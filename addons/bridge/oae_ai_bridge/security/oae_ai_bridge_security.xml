@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <record id="group_oae_ai_bridge_user" model="res.groups">
+    <field name="name">OAE AI Bridge User</field>
+    <field name="category_id" ref="base.module_category_hidden"/>
+  </record>
+
+  <record id="group_oae_ai_bridge_admin" model="res.groups">
+    <field name="name">OAE AI Bridge Admin</field>
+    <field name="implied_ids" eval="[(4, ref('oae_ai_bridge.group_oae_ai_bridge_user'))]"/>
+    <field name="category_id" ref="base.module_category_hidden"/>
+  </record>
+</odoo>

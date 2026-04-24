@@ -1,0 +1,11 @@
+node_modules
+.pnpm-store
+.turbo
+.git
+.gitignore
+.next
+dist
+coverage
+.env
+infra/compose/.env
+**/__pycache__

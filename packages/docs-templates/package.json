@@ -1,0 +1,13 @@
+{
+  "name": "@oae/docs-templates",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "echo 'docs-templates: static assets'",
+    "dev": "echo 'docs-templates: static assets'",
+    "lint": "echo 'docs-templates: static assets'",
+    "test": "echo 'docs-templates: static assets'",
+    "typecheck": "echo 'docs-templates: static assets'"
+  }
+}

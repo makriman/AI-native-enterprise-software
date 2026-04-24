@@ -1,0 +1,11 @@
+{
+  "workspace_id": "ws_123",
+  "instance_id": "inst_123",
+  "title": "Partner onboarding workflow",
+  "prompt": "Create a partner onboarding workflow with document collection, approval routing, SLA reminders, portal upload, and overdue dashboard.",
+  "attachments": [],
+  "execution_mode": "managed_api",
+  "deployment_path": ["sandbox", "staging", "production"],
+  "risk_tolerance": "medium",
+  "auto_deploy_sandbox": true
+}

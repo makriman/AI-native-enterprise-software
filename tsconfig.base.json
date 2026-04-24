@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022"],
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@oae/shared-types": ["packages/shared-types/src/index.ts"],
+      "@oae/spec-schema": ["packages/spec-schema/src/index.ts"],
+      "@oae/spec-compiler": ["packages/spec-compiler/src/index.ts"],
+      "@oae/policy-engine": ["packages/policy-engine/src/index.ts"],
+      "@oae/odoo-adapter": ["packages/odoo-adapter/src/index.ts"],
+      "@oae/deployment": ["packages/deployment/src/index.ts"]
+    }
+  }
+}

@@ -1,0 +1,26 @@
+source: hubspot_contacts_export.csv
+target_model: res.partner
+idempotency:
+  key: external_id
+  strategy: upsert
+mappings:
+  - source: hs_object_id
+    target: x_external_hubspot_id
+    transform: string
+  - source: email
+    target: email
+  - source: firstname
+    target: name
+    transform: concat_with_lastname
+  - source: phone
+    target: phone
+deduplication:
+  strategy: external_then_email
+  external_field: x_external_hubspot_id
+  fallback_field: email
+validation:
+  required:
+    - email
+quarantine:
+  enabled: true
+  reason_field: migration_error

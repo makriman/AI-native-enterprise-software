@@ -1,0 +1,28 @@
+{
+  "name": "ai-native-enterprise-software",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Open-source AI-native enterprise software implementation platform",
+  "license": "LGPL-3.0-or-later",
+  "packageManager": "pnpm@10.0.0",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "format": "turbo run format",
+    "compose:up": "docker compose -f infra/compose/docker-compose.yml up -d --build",
+    "compose:down": "docker compose -f infra/compose/docker-compose.yml down"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.18",
+    "eslint": "^9.25.0",
+    "prettier": "^3.5.3",
+    "turbo": "^2.5.0",
+    "typescript": "^5.8.3"
+  }
+}

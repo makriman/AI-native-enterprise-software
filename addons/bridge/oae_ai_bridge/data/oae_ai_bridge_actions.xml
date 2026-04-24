@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <record id="action_oae_ai_bridge_open_console" model="ir.actions.act_url">
+    <field name="name">Open AI Console</field>
+    <field name="type">ir.actions.act_url</field>
+    <field name="url">/oae/console</field>
+    <field name="target">new</field>
+  </record>
+
+  <record id="action_oae_ai_bridge_context_from_partner" model="ir.actions.server">
+    <field name="name">Create AI Context Link</field>
+    <field name="model_id" ref="base.model_res_partner"/>
+    <field name="binding_model_id" ref="base.model_res_partner"/>
+    <field name="state">code</field>
+    <field name="code">
+result = env['oae.ai.bridge.service'].create_context_link(model_name=record._name, res_id=record.id)
+action = {
+    'type': 'ir.actions.act_url',
+    'url': result['url'],
+    'target': 'new'
+}
+    </field>
+  </record>
+</odoo>

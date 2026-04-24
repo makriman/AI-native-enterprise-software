@@ -1,0 +1,13 @@
+{
+  "name": "@oae/fixtures",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "echo 'fixtures: static data'",
+    "dev": "echo 'fixtures: static data'",
+    "lint": "echo 'fixtures: static data'",
+    "test": "echo 'fixtures: static data'",
+    "typecheck": "echo 'fixtures: static data'"
+  }
+}
