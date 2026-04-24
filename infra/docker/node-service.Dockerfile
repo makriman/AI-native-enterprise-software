@@ -10,7 +10,7 @@ RUN pnpm install
 
 FROM deps AS build
 ARG APP_PACKAGE
-RUN pnpm --filter ${APP_PACKAGE} build
+RUN pnpm --filter ${APP_PACKAGE}... build
 
 FROM node:22-alpine AS runtime
 RUN corepack enable
