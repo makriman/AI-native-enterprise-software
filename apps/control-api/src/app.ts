@@ -17,7 +17,9 @@ export function createApp(config: ControlApiConfig) {
     }
   });
 
-  const store = new MemoryStore();
+  const store = new MemoryStore({
+    stateFilePath: config.stateStorePath
+  });
 
   app.register(cors, {
     origin: true

@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import type { FormEvent } from "react";
+import { useRouter } from "next/navigation";
 
 const CONTROL_API_URL = process.env.NEXT_PUBLIC_CONTROL_API_URL || "";
 
 export function BuildComposerForm() {
+  const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -43,8 +45,10 @@ export function BuildComposerForm() {
       }
 
       const json = (await response.json()) as { build_id: string; status: string };
-      setResult(`Build ${json.build_id} created with status ${json.status}.`);
+      setResult(`Build ${json.build_id} created with status ${json.status}. Redirecting to build detail...`);
       event.currentTarget.reset();
+      router.push(`/builds/${json.build_id}`);
+      router.refresh();
     } catch (submitError) {
       setError(String(submitError));
     } finally {

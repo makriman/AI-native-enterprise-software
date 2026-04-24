@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { fetchJson } from "@/lib/api";
+import { BuildActions } from "@/components/build-actions";
 
 type BuildDetail = {
   build_id: string;
@@ -39,7 +40,27 @@ type BuildDetail = {
 
 export default async function BuildDetailPage({ params }: { params: Promise<{ buildId: string }> }) {
   const { buildId } = await params;
-  const detail = await fetchJson<BuildDetail>(`/api/v1/builds/${buildId}`);
+  let detail: BuildDetail | null = null;
+  let loadError: string | null = null;
+
+  try {
+    detail = await fetchJson<BuildDetail>(`/api/v1/builds/${buildId}`);
+  } catch {
+    loadError = "Build detail is temporarily unavailable. Refresh in a few seconds.";
+  }
+
+  if (!detail) {
+    return (
+      <section>
+        <h1 className="page-headline">Build Detail: {buildId}</h1>
+        <p className="page-subtitle">Inspect plan, policy findings, artifacts, tests, and preview links before approval.</p>
+        <article className="panel" role="status">
+          <h4>Control API Unavailable</h4>
+          <p className="muted">{loadError}</p>
+        </article>
+      </section>
+    );
+  }
 
   return (
     <section>
@@ -115,6 +136,8 @@ export default async function BuildDetailPage({ params }: { params: Promise<{ bu
           {!detail.preview_links.length ? <li>No preview yet.</li> : null}
         </ul>
       </div>
+
+      <BuildActions buildId={detail.build_id} status={detail.status} deploymentPath={detail.request.deploymentPath} />
     </section>
   );
 }

@@ -16,7 +16,8 @@ async function bootstrap(): Promise<void> {
         port: config.port,
         host: config.host,
         repoRoot: config.repoRoot,
-        artifactRoot: config.artifactRoot
+        artifactRoot: config.artifactRoot,
+        stateStorePath: config.stateStorePath
       },
       "control-api started"
     );

@@ -1,4 +1,6 @@
 import { EventEmitter } from "node:events";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname } from "node:path";
 import type {
   Artifact,
   BuildEvent,
@@ -67,6 +69,23 @@ interface EdgeJob {
   result?: Record<string, unknown>;
 }
 
+interface MemoryStoreOptions {
+  stateFilePath?: string;
+}
+
+interface StoreSnapshot {
+  buildEvents: Array<[string, BuildEvent[]]>;
+  builds: Array<[string, BuildEnvelope]>;
+  deployments: Array<[string, DeploymentEnvelope]>;
+  approvals: ApprovalAction[];
+  driftReports: Array<[string, DriftReport]>;
+  connections: ConnectionRecord[];
+  edgeJobs: Array<[string, EdgeJob]>;
+  workspaces: Array<[string, Workspace]>;
+  instances: Array<[string, Instance]>;
+  environments: Array<[string, EnvironmentRecord[]]>;
+}
+
 export class MemoryStore {
   private readonly eventEmitter = new EventEmitter();
   private readonly buildEvents = new Map<string, BuildEvent[]>();
@@ -81,7 +100,18 @@ export class MemoryStore {
   private readonly instances = new Map<string, Instance>();
   private readonly environments = new Map<string, EnvironmentRecord[]>();
 
-  constructor() {
+  private readonly stateFilePath?: string;
+
+  constructor(options: MemoryStoreOptions = {}) {
+    this.stateFilePath = options.stateFilePath;
+
+    if (!this.restoreSnapshot()) {
+      this.seedDefaults();
+      this.persistSnapshot();
+    }
+  }
+
+  private seedDefaults(): void {
     const now = new Date().toISOString();
 
     const workspace: Workspace = {
@@ -148,6 +178,67 @@ export class MemoryStore {
     this.environments.set(instance.id, envRecords);
   }
 
+  private replaceMap<K, V>(target: Map<K, V>, entries: Array<[K, V]>): void {
+    target.clear();
+    for (const [key, value] of entries) {
+      target.set(key, value);
+    }
+  }
+
+  private snapshot(): StoreSnapshot {
+    return {
+      buildEvents: Array.from(this.buildEvents.entries()),
+      builds: Array.from(this.builds.entries()),
+      deployments: Array.from(this.deployments.entries()),
+      approvals: this.approvals,
+      driftReports: Array.from(this.driftReports.entries()),
+      connections: this.connections,
+      edgeJobs: Array.from(this.edgeJobs.entries()),
+      workspaces: Array.from(this.workspaces.entries()),
+      instances: Array.from(this.instances.entries()),
+      environments: Array.from(this.environments.entries())
+    };
+  }
+
+  private restoreSnapshot(): boolean {
+    if (!this.stateFilePath || !existsSync(this.stateFilePath)) {
+      return false;
+    }
+
+    try {
+      const raw = readFileSync(this.stateFilePath, "utf8");
+      const parsed = JSON.parse(raw) as Partial<StoreSnapshot>;
+
+      this.replaceMap(this.buildEvents, parsed.buildEvents ?? []);
+      this.replaceMap(this.builds, parsed.builds ?? []);
+      this.replaceMap(this.deployments, parsed.deployments ?? []);
+      this.approvals.splice(0, this.approvals.length, ...(parsed.approvals ?? []));
+      this.replaceMap(this.driftReports, parsed.driftReports ?? []);
+      this.connections.splice(0, this.connections.length, ...(parsed.connections ?? []));
+      this.replaceMap(this.edgeJobs, parsed.edgeJobs ?? []);
+      this.replaceMap(this.workspaces, parsed.workspaces ?? []);
+      this.replaceMap(this.instances, parsed.instances ?? []);
+      this.replaceMap(this.environments, parsed.environments ?? []);
+
+      return this.workspaces.size > 0 && this.instances.size > 0;
+    } catch {
+      return false;
+    }
+  }
+
+  private persistSnapshot(): void {
+    if (!this.stateFilePath) {
+      return;
+    }
+
+    try {
+      mkdirSync(dirname(this.stateFilePath), { recursive: true });
+      writeFileSync(this.stateFilePath, JSON.stringify(this.snapshot(), null, 2), "utf8");
+    } catch {
+      // Keep runtime resilient even if snapshot persistence fails.
+    }
+  }
+
   listWorkspaces(): Workspace[] {
     return Array.from(this.workspaces.values());
   }
@@ -166,6 +257,7 @@ export class MemoryStore {
 
   createBuild(envelope: BuildEnvelope): void {
     this.builds.set(envelope.request.id, envelope);
+    this.persistSnapshot();
   }
 
   getBuild(buildId: string): BuildEnvelope | undefined {
@@ -185,6 +277,7 @@ export class MemoryStore {
     existing.request.status = status;
     existing.request.updatedAt = new Date().toISOString();
     this.builds.set(buildId, existing);
+    this.persistSnapshot();
   }
 
   setBuildPlan(buildId: string, plan: BuildPlan): void {
@@ -195,6 +288,7 @@ export class MemoryStore {
 
     existing.plan = plan;
     this.builds.set(buildId, existing);
+    this.persistSnapshot();
   }
 
   setBuildSpec(buildId: string, spec: unknown): void {
@@ -205,6 +299,7 @@ export class MemoryStore {
 
     existing.spec = spec;
     this.builds.set(buildId, existing);
+    this.persistSnapshot();
   }
 
   setBuildFindings(buildId: string, findings: PolicyFinding[]): void {
@@ -215,6 +310,7 @@ export class MemoryStore {
 
     existing.findings = findings;
     this.builds.set(buildId, existing);
+    this.persistSnapshot();
   }
 
   addArtifact(buildId: string, artifact: Artifact): void {
@@ -225,6 +321,7 @@ export class MemoryStore {
 
     existing.artifacts.push(artifact);
     this.builds.set(buildId, existing);
+    this.persistSnapshot();
   }
 
   setTestStatus(buildId: string, status: BuildEnvelope["testStatus"]): void {
@@ -235,6 +332,7 @@ export class MemoryStore {
 
     existing.testStatus = status;
     this.builds.set(buildId, existing);
+    this.persistSnapshot();
   }
 
   setPreviews(buildId: string, previews: BuildEnvelope["previews"]): void {
@@ -245,6 +343,7 @@ export class MemoryStore {
 
     existing.previews = previews;
     this.builds.set(buildId, existing);
+    this.persistSnapshot();
   }
 
   addBuildEvent(buildId: string, event: BuildEvent): void {
@@ -252,6 +351,7 @@ export class MemoryStore {
     list.push(event);
     this.buildEvents.set(buildId, list);
     this.eventEmitter.emit(`build:${buildId}`, event);
+    this.persistSnapshot();
   }
 
   listBuildEvents(buildId: string): BuildEvent[] {
@@ -268,6 +368,7 @@ export class MemoryStore {
 
   addApproval(action: ApprovalAction): void {
     this.approvals.push(action);
+    this.persistSnapshot();
   }
 
   listApprovals(buildId: string): ApprovalAction[] {
@@ -279,6 +380,7 @@ export class MemoryStore {
       deployment,
       logs: []
     });
+    this.persistSnapshot();
   }
 
   getDeployment(deploymentId: string): DeploymentEnvelope | undefined {
@@ -298,6 +400,7 @@ export class MemoryStore {
       entry.deployment.completedAt = new Date().toISOString();
     }
     this.deployments.set(deploymentId, entry);
+    this.persistSnapshot();
   }
 
   appendDeploymentLog(deploymentId: string, message: string): void {
@@ -307,10 +410,12 @@ export class MemoryStore {
     }
     entry.logs.push(message);
     this.deployments.set(deploymentId, entry);
+    this.persistSnapshot();
   }
 
   registerConnection(connection: ConnectionRecord): void {
     this.connections.push(connection);
+    this.persistSnapshot();
   }
 
   listConnections(workspaceId: string): ConnectionRecord[] {
@@ -319,6 +424,7 @@ export class MemoryStore {
 
   addDriftReport(report: DriftReport): void {
     this.driftReports.set(report.id, report);
+    this.persistSnapshot();
   }
 
   getDriftReport(reportId: string): DriftReport | undefined {
@@ -327,6 +433,7 @@ export class MemoryStore {
 
   createEdgeJob(job: EdgeJob): void {
     this.edgeJobs.set(job.id, job);
+    this.persistSnapshot();
   }
 
   claimEdgeJob(workspaceId: string, agentId: string): EdgeJob | undefined {
@@ -341,6 +448,7 @@ export class MemoryStore {
     candidate.claimedBy = agentId;
     candidate.claimedAt = new Date().toISOString();
     this.edgeJobs.set(candidate.id, candidate);
+    this.persistSnapshot();
     return candidate;
   }
 
@@ -360,6 +468,7 @@ export class MemoryStore {
     job.result = payload.result;
     job.completedAt = new Date().toISOString();
     this.edgeJobs.set(jobId, job);
+    this.persistSnapshot();
     return job;
   }
 }

@@ -1,16 +1,38 @@
-import { SectionPlaceholder } from "@/components/section-placeholder";
+import { fetchJson } from "@/lib/api";
+import { LogsStreamPanel } from "@/components/logs-stream-panel";
 
-export default function LogsPage() {
+type BuildListResponse = {
+  data: Array<{
+    id: string;
+    title: string;
+    status: string;
+  }>;
+};
+
+export default async function LogsPage() {
+  let builds: BuildListResponse["data"] = [];
+  let loadError: string | null = null;
+
+  try {
+    const response = await fetchJson<BuildListResponse>("/api/v1/builds");
+    builds = response.data;
+  } catch {
+    loadError = "Unable to load build list. Refresh in a few seconds.";
+  }
+
   return (
-    <SectionPlaceholder
-      title="Logs / Terminal Stream"
-      subtitle="Replay and tail lifecycle logs from planning, compilation, policy, tests, and deployment."
-      bullets={[
-        "Live stream via SSE or WebSocket",
-        "Append-only event timeline per build",
-        "Correlated execution identifiers"
-      ]}
-      quickLink={{ href: "/build-history", label: "Choose a build to stream" }}
-    />
+    <section>
+      <h1 className="page-headline">Logs / Terminal Stream</h1>
+      <p className="page-subtitle">
+        Replay and tail lifecycle logs from planning, compilation, policy, tests, and deployment.
+      </p>
+      {loadError ? (
+        <article className="panel" role="status" style={{ marginBottom: 16 }}>
+          <h4>Control API Unavailable</h4>
+          <p className="muted">{loadError}</p>
+        </article>
+      ) : null}
+      <LogsStreamPanel builds={builds} />
+    </section>
   );
 }

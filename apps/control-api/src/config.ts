@@ -5,18 +5,21 @@ export interface ControlApiConfig {
   host: string;
   repoRoot: string;
   artifactRoot: string;
+  stateStorePath: string;
   policyProfileDefault: "strict" | "standard" | "permissive_dev";
 }
 
 export function loadConfig(): ControlApiConfig {
   const repoRoot = process.env.REPO_ROOT || path.resolve(process.cwd(), "../..");
   const artifactRoot = process.env.ARTIFACT_ROOT || path.join(repoRoot, "artifacts");
+  const stateStorePath = process.env.STATE_STORE_PATH || path.join(artifactRoot, "control-api-state.json");
 
   return {
     port: Number(process.env.PORT || 4000),
     host: process.env.HOST || "0.0.0.0",
     repoRoot,
     artifactRoot,
+    stateStorePath,
     policyProfileDefault: (process.env.POLICY_PROFILE_DEFAULT as ControlApiConfig["policyProfileDefault"]) || "standard"
   };
 }

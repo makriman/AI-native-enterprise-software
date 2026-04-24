@@ -32,10 +32,13 @@ services:
       HOST: 0.0.0.0
       REPO_ROOT: /workspace
       ARTIFACT_ROOT: /workspace/artifacts
+      STATE_STORE_PATH: /workspace/artifacts/control-api-state.json
       POLICY_PROFILE_DEFAULT: standard
       DATABASE_URL: postgresql://${CONTROLPLANE_DB_USER}:${CONTROLPLANE_DB_PASSWORD}@controlplane-db:5432/${CONTROLPLANE_DB_NAME}
       REDIS_URL: redis://redis:6379
       S3_ENDPOINT: http://minio:9000
+    volumes:
+      - control-api-artifacts:/workspace/artifacts
     depends_on:
       - controlplane-db
       - redis
@@ -114,6 +117,7 @@ services:
 
 volumes:
   controlplane-postgres-data:
+  control-api-artifacts:
   odoo-postgres-data:
   odoo-filestore:
   redis-data:
