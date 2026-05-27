@@ -19,5 +19,14 @@
   },
   "devDependencies": {
     "tsx": "^4.19.3"
+  },
+  "license": "MIT",
+  "description": "An AI-native control plane for building, changing, testing, approving, deploying, and rolling back enterprise software.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/makriman/AI-native-enterprise-software.git"
+  },
+  "bugs": {
+    "url": "https://github.com/makriman/AI-native-enterprise-software/issues"
   }
 }

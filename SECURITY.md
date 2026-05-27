@@ -1,23 +1,37 @@
 # Security Policy
 
-## Supported Branches
-
-- `stable/19` (primary)
+Security matters for this project because public repositories often connect to real users, provider APIs, deployment systems, or operational data.
 
 ## Reporting a Vulnerability
 
-Please report vulnerabilities privately through repository security advisories or designated maintainer contact channels.
+Please do not open a public GitHub issue for security problems.
 
-Include:
-- affected service/module
-- reproduction steps
-- impact assessment
-- recommended mitigation (if available)
+If you find a vulnerability, contact the repository owner privately with:
 
-## Security Controls
+- A short summary.
+- Steps to reproduce.
+- The affected route, API, package, or workflow.
+- Screenshots or logs with secrets removed.
+- The impact you believe it may have.
 
-- isolated managed runner environments
-- edge-token based agent registration
-- policy engine risk scanning
-- approval gates for high-risk and production operations
-- audit trail for prompts, plans, specs, diffs, tests, approvals, and deployments
+If you are unsure whether something is security-sensitive, report it privately first.
+
+## Report Privately
+
+- Exposed API keys, OAuth secrets, database URLs, or tokens.
+- Authentication or authorization bypasses.
+- Cross-user data exposure.
+- Prompt or tool behavior that leaks private data.
+- Unsafe file, network, or database access.
+- Admin route bypasses.
+- Production data leaks.
+
+## Secrets and Data
+
+- Never commit env files, provider keys, tokens, database dumps, or production user data.
+- Keep model provider keys and integration credentials outside client bundles.
+- Avoid logging personal data, private content, or raw secrets.
+
+## Supported Versions
+
+Security fixes target the current default branch unless maintainers announce a release policy.
