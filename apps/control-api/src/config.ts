@@ -7,6 +7,13 @@ export interface ControlApiConfig {
   artifactRoot: string;
   stateStorePath: string;
   policyProfileDefault: "strict" | "standard" | "permissive_dev";
+  apiToken?: string;
+  edgeAgentToken?: string;
+}
+
+function optionalSecret(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : undefined;
 }
 
 export function loadConfig(): ControlApiConfig {
@@ -20,6 +27,8 @@ export function loadConfig(): ControlApiConfig {
     repoRoot,
     artifactRoot,
     stateStorePath,
-    policyProfileDefault: (process.env.POLICY_PROFILE_DEFAULT as ControlApiConfig["policyProfileDefault"]) || "standard"
+    policyProfileDefault: (process.env.POLICY_PROFILE_DEFAULT as ControlApiConfig["policyProfileDefault"]) || "standard",
+    apiToken: optionalSecret(process.env.CONTROL_API_TOKEN),
+    edgeAgentToken: optionalSecret(process.env.EDGE_AGENT_TOKEN)
   };
 }

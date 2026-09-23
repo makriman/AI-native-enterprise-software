@@ -18,3 +18,5 @@ Usage:
 ```bash
 docker compose -f infra/compose/docker-compose.yml --env-file infra/compose/.env up -d --build
 ```
+
+Copy `.env.example` to an untracked `.env` and replace every `replace-with-random-token` value before the first start. Required names are listed in `docs/security/secrets.md`.

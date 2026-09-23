@@ -1,5 +1,7 @@
 import type { FastifyInstance } from "fastify";
+import { tokensMatch } from "@oae/service-auth";
 import { z } from "zod";
+import type { ControlApiConfig } from "../config.js";
 import { createId } from "../lib/id.js";
 import type { MemoryStore } from "../store/memory-store.js";
 
@@ -29,7 +31,11 @@ const odooConnectionSchema = z.object({
   db_name: z.string().min(1)
 });
 
-export async function connectionRoutes(app: FastifyInstance, store: MemoryStore): Promise<void> {
+export async function connectionRoutes(
+  app: FastifyInstance,
+  store: MemoryStore,
+  config: ControlApiConfig
+): Promise<void> {
   app.post("/api/v1/connections/openai-api", async (request, reply) => {
     const parsed = openAiConnectionSchema.safeParse(request.body);
     if (!parsed.success) {
@@ -55,6 +61,10 @@ export async function connectionRoutes(app: FastifyInstance, store: MemoryStore)
     const parsed = edgeRegisterSchema.safeParse(request.body);
     if (!parsed.success) {
       return reply.code(400).send({ error: parsed.error.flatten() });
+    }
+
+    if (!config.edgeAgentToken || !tokensMatch(parsed.data.token, config.edgeAgentToken)) {
+      return reply.code(401).send({ error: "unauthorized" });
     }
 
     const now = new Date().toISOString();

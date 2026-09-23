@@ -5,6 +5,7 @@ import { z } from "zod";
 import { validatePromotionPath } from "@oae/deployment";
 import type { Artifact, BuildEvent, BuildRequest, Deployment } from "@oae/shared-types";
 import { compileCustomizationSpec } from "@oae/spec-compiler";
+import { AUTHENTICATED_ACTOR } from "../lib/actor.js";
 import { createId } from "../lib/id.js";
 import type { ControlApiConfig } from "../config.js";
 import { createPlanAndSpec } from "../services/planner.js";
@@ -31,7 +32,6 @@ const deploySchema = z.object({
 });
 
 const approvalBodySchema = z.object({
-  actor: z.string().default("system"),
   comment: z.string().optional()
 });
 
@@ -314,7 +314,7 @@ export async function buildRoutes(app: FastifyInstance, store: MemoryStore, conf
       id: createId("approval"),
       buildId: params.buildId,
       action: "approve",
-      actor: parsedBody.data.actor,
+      actor: AUTHENTICATED_ACTOR,
       comment: parsedBody.data.comment,
       createdAt: new Date().toISOString()
     });
@@ -341,7 +341,7 @@ export async function buildRoutes(app: FastifyInstance, store: MemoryStore, conf
       id: createId("approval"),
       buildId: params.buildId,
       action: "reject",
-      actor: parsedBody.data.actor,
+      actor: AUTHENTICATED_ACTOR,
       comment: parsedBody.data.comment,
       createdAt: new Date().toISOString()
     });
@@ -368,7 +368,7 @@ export async function buildRoutes(app: FastifyInstance, store: MemoryStore, conf
       id: createId("approval"),
       buildId: params.buildId,
       action: "request_changes",
-      actor: parsedBody.data.actor,
+      actor: AUTHENTICATED_ACTOR,
       comment: parsedBody.data.comment,
       createdAt: new Date().toISOString()
     });

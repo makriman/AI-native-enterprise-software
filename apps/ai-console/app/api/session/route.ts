@@ -1,50 +1,55 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { z } from "zod";
-
-const sessionSchema = z.object({
-  user_id: z.string().min(1),
-  role: z.string().min(1)
-});
+import { issueOperatorSession, sessionCookieOptions, verifySession } from "../../../lib/session";
 
 export async function GET() {
-  const cookieStore = await cookies();
-  const raw = cookieStore.get("oae_session")?.value;
-  if (!raw) {
+  const secret = process.env.CONSOLE_SESSION_SECRET?.trim();
+  const raw = (await cookies()).get("oae_session")?.value;
+  if (!secret || !raw) {
     return NextResponse.json({ authenticated: false });
   }
 
-  try {
-    const parsed = sessionSchema.parse(JSON.parse(raw));
-    return NextResponse.json({ authenticated: true, session: parsed });
-  } catch {
+  const session = verifySession(raw, secret);
+  if (!session) {
     return NextResponse.json({ authenticated: false });
   }
+
+  return NextResponse.json({
+    authenticated: true,
+    session: {
+      user_id: session.user_id,
+      role: session.role
+    }
+  });
 }
 
 export async function POST(request: Request) {
-  const body = await request.json();
-  const parsed = sessionSchema.safeParse(body);
-
-  if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+  let body: unknown = null;
+  try {
+    body = await request.json();
+  } catch {
+    body = null;
   }
 
-  const response = NextResponse.json({ authenticated: true, session: parsed.data });
-  response.cookies.set("oae_session", JSON.stringify(parsed.data), {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/"
+  const issued = issueOperatorSession({
+    body,
+    authorization: request.headers.get("authorization") ?? undefined,
+    operatorToken: process.env.CONSOLE_OPERATOR_TOKEN,
+    sessionSecret: process.env.CONSOLE_SESSION_SECRET
   });
+
+  const response = NextResponse.json(issued.body, { status: issued.status });
+  if (issued.cookie) {
+    response.cookies.set("oae_session", issued.cookie, sessionCookieOptions());
+  }
   return response;
 }
 
 export async function DELETE() {
   const response = NextResponse.json({ authenticated: false });
   response.cookies.set("oae_session", "", {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
+    ...sessionCookieOptions(),
+    maxAge: 0,
     expires: new Date(0)
   });
   return response;

@@ -14,8 +14,6 @@ type StreamEvent = {
   message?: string;
 };
 
-const CONTROL_API_URL = process.env.NEXT_PUBLIC_CONTROL_API_URL || "";
-
 export function LogsStreamPanel({ builds }: { builds: BuildOption[] }) {
   const [selectedBuildId, setSelectedBuildId] = useState<string>(builds[0]?.id ?? "");
   const [connected, setConnected] = useState(false);
@@ -31,7 +29,7 @@ export function LogsStreamPanel({ builds }: { builds: BuildOption[] }) {
     setEvents([]);
     setConnected(false);
 
-    const source = new EventSource(`${CONTROL_API_URL}/api/v1/builds/${selectedBuildId}/stream`);
+    const source = new EventSource(`/console/control/builds/${selectedBuildId}/stream`);
 
     source.onopen = () => {
       setConnected(true);

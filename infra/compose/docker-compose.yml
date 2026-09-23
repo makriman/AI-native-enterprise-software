@@ -20,6 +20,10 @@ services:
       sh -lc "corepack enable && pnpm install && pnpm --filter @oae/ai-console dev"
     environment:
       CONTROL_API_URL: http://control-api:4000
+      CONTROL_API_TOKEN: ${CONTROL_API_TOKEN}
+      CONSOLE_SESSION_SECRET: ${CONSOLE_SESSION_SECRET}
+      CONSOLE_OPERATOR_TOKEN: ${CONSOLE_OPERATOR_TOKEN}
+      CONSOLE_COOKIE_SECURE: ${CONSOLE_COOKIE_SECURE:-false}
       NEXT_PUBLIC_CONTROL_API_URL: http://localhost:4000
     volumes:
       - ../../:/workspace
@@ -41,6 +45,8 @@ services:
       ARTIFACT_ROOT: /workspace/artifacts
       STATE_STORE_PATH: /workspace/artifacts/control-api-state.json
       POLICY_PROFILE_DEFAULT: standard
+      CONTROL_API_TOKEN: ${CONTROL_API_TOKEN}
+      EDGE_AGENT_TOKEN: ${EDGE_AGENT_TOKEN}
       DATABASE_URL: postgresql://${CONTROLPLANE_DB_USER}:${CONTROLPLANE_DB_PASSWORD}@controlplane-db:5432/${CONTROLPLANE_DB_NAME}
       REDIS_URL: redis://redis:6379
       S3_ENDPOINT: http://minio:9000
@@ -62,6 +68,7 @@ services:
     environment:
       PORT: 4100
       HOST: 0.0.0.0
+      RUNNER_SUPERVISOR_TOKEN: ${RUNNER_SUPERVISOR_TOKEN}
       RUNNER_WORKDIR_ROOT: /workspace/.runner-workspaces
     volumes:
       - ../../:/workspace
@@ -77,6 +84,7 @@ services:
     environment:
       PORT: 4300
       HOST: 0.0.0.0
+      LOG_GATEWAY_TOKEN: ${LOG_GATEWAY_TOKEN}
     volumes:
       - ../../:/workspace
     ports:

@@ -19,7 +19,8 @@
       "@oae/spec-compiler": ["packages/spec-compiler/src/index.ts"],
       "@oae/policy-engine": ["packages/policy-engine/src/index.ts"],
       "@oae/odoo-adapter": ["packages/odoo-adapter/src/index.ts"],
-      "@oae/deployment": ["packages/deployment/src/index.ts"]
+      "@oae/deployment": ["packages/deployment/src/index.ts"],
+      "@oae/service-auth": ["packages/service-auth/src/index.ts"]
     }
   }
 }

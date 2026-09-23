@@ -4,8 +4,6 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
-const CONTROL_API_URL = process.env.NEXT_PUBLIC_CONTROL_API_URL || "";
-
 export function BuildComposerForm() {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
@@ -32,7 +30,7 @@ export function BuildComposerForm() {
     };
 
     try {
-      const response = await fetch(`${CONTROL_API_URL}/api/v1/builds`, {
+      const response = await fetch("/console/control/builds", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
