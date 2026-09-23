@@ -9,10 +9,8 @@ type BuildActionsProps = {
   deploymentPath: string[];
 };
 
-const CONTROL_API_URL = process.env.NEXT_PUBLIC_CONTROL_API_URL || "";
-
 async function postJson(path: string, payload?: Record<string, unknown>): Promise<unknown> {
-  const response = await fetch(`${CONTROL_API_URL}${path}`, {
+  const response = await fetch(path, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -63,7 +61,7 @@ export function BuildActions({ buildId, status, deploymentPath }: BuildActionsPr
           onClick={() =>
             runAction(
               "approve",
-              () => postJson(`/api/v1/builds/${buildId}/approve`, { actor: "console-user" }),
+              () => postJson(`/console/control/builds/${buildId}/approve`, {}),
               "Build approved."
             )
           }
@@ -78,8 +76,7 @@ export function BuildActions({ buildId, status, deploymentPath }: BuildActionsPr
             runAction(
               "request_changes",
               () =>
-                postJson(`/api/v1/builds/${buildId}/request-changes`, {
-                  actor: "console-user",
+                postJson(`/console/control/builds/${buildId}/request-changes`, {
                   comment: "Needs scope revision"
                 }),
               "Build moved back to scope review."
@@ -96,8 +93,7 @@ export function BuildActions({ buildId, status, deploymentPath }: BuildActionsPr
             runAction(
               "reject",
               () =>
-                postJson(`/api/v1/builds/${buildId}/reject`, {
-                  actor: "console-user",
+                postJson(`/console/control/builds/${buildId}/reject`, {
                   comment: "Rejected from UI"
                 }),
               "Build rejected."
@@ -114,7 +110,7 @@ export function BuildActions({ buildId, status, deploymentPath }: BuildActionsPr
             runAction(
               "deploy_sandbox",
               () =>
-                postJson(`/api/v1/builds/${buildId}/deploy`, {
+                postJson(`/console/control/builds/${buildId}/deploy`, {
                   target_environment: "sandbox",
                   approved_snapshot_id: `snap_${buildId}`,
                   strategy: "rolling",

@@ -15,3 +15,5 @@
 - policy engine + mandatory approvals
 - immutable audit trail
 - deployment backup and rollback gates
+- fail-closed bearer auth on control-api, log-gateway, and runner-supervisor
+- HMAC-signed console session cookies; operator role is assigned by the server

@@ -11,24 +11,37 @@ interface AgentConfig {
   workRoot: string;
 }
 
+function requireToken(): string {
+  const token = process.env.AGENT_TOKEN?.trim();
+  if (!token) {
+    throw new Error("AGENT_TOKEN is required");
+  }
+  return token;
+}
+
 function loadConfig(): AgentConfig {
   return {
     controlApiUrl: process.env.CONTROL_API_URL || "http://localhost:4000",
     workspaceId: process.env.WORKSPACE_ID || "ws_default",
     agentName: process.env.AGENT_NAME || "edge-agent-local",
-    token: process.env.AGENT_TOKEN || "dev-edge-token",
+    token: requireToken(),
     hostName: process.env.HOSTNAME || "local-host",
     pollIntervalMs: Number(process.env.POLL_INTERVAL_MS || 10000),
     workRoot: process.env.EDGE_AGENT_WORKROOT || "/tmp/oae-edge-agent"
   };
 }
 
-async function postJson<T>(url: string, body: unknown): Promise<T> {
+function authHeaders(token: string): Record<string, string> {
+  return {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json"
+  };
+}
+
+async function postJson<T>(url: string, token: string, body: unknown): Promise<T> {
   const response = await fetch(url, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: authHeaders(token),
     body: JSON.stringify(body)
   });
 
@@ -40,7 +53,7 @@ async function postJson<T>(url: string, body: unknown): Promise<T> {
 }
 
 async function registerAgent(config: AgentConfig): Promise<{ agent_id: string; status: string }> {
-  return postJson(`${config.controlApiUrl}/api/v1/connections/edge-agent/register`, {
+  return postJson(`${config.controlApiUrl}/api/v1/connections/edge-agent/register`, config.token, {
     workspace_id: config.workspaceId,
     name: config.agentName,
     host: config.hostName,
@@ -49,7 +62,7 @@ async function registerAgent(config: AgentConfig): Promise<{ agent_id: string; s
 }
 
 async function heartbeat(config: AgentConfig, agentId: string, status: "online" | "busy"): Promise<void> {
-  await postJson(`${config.controlApiUrl}/api/v1/connections/edge-agent/heartbeat`, {
+  await postJson(`${config.controlApiUrl}/api/v1/connections/edge-agent/heartbeat`, config.token, {
     workspace_id: config.workspaceId,
     agent_id: agentId,
     status
@@ -61,7 +74,11 @@ async function pollJob(config: AgentConfig, agentId: string): Promise<{ id: stri
   url.searchParams.set("workspace_id", config.workspaceId);
   url.searchParams.set("agent_id", agentId);
 
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${config.token}`
+    }
+  });
   if (response.status === 204) {
     return null;
   }
@@ -74,7 +91,7 @@ async function pollJob(config: AgentConfig, agentId: string): Promise<{ id: stri
 }
 
 async function completeJob(config: AgentConfig, jobId: string, payload: Record<string, unknown>): Promise<void> {
-  await postJson(`${config.controlApiUrl}/api/v1/edge/jobs/${jobId}/complete`, payload);
+  await postJson(`${config.controlApiUrl}/api/v1/edge/jobs/${jobId}/complete`, config.token, payload);
 }
 
 async function executeJob(config: AgentConfig, job: { id: string; build_id: string; spec_json: unknown }): Promise<void> {

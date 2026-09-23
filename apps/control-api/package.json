@@ -9,11 +9,12 @@
     "start": "node dist/apps/control-api/src/server.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "echo 'control-api lint: pending full ruleset'",
-    "test": "node --test"
+    "test": "tsx --test test/**/*.test.ts"
   },
   "dependencies": {
     "@fastify/cors": "^11.1.0",
     "@oae/deployment": "workspace:*",
+    "@oae/service-auth": "workspace:*",
     "@oae/policy-engine": "workspace:*",
     "@oae/shared-types": "workspace:*",
     "@oae/spec-compiler": "workspace:*",

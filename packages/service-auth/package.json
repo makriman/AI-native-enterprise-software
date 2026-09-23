@@ -1,0 +1,29 @@
+{
+  "name": "@oae/service-auth",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "echo 'service-auth lint: pending full ruleset'",
+    "test": "node --experimental-strip-types --test test/*.test.ts"
+  },
+  "license": "MIT",
+  "description": "Fail-closed bearer checks for control-plane services.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/makriman/AI-native-enterprise-software.git"
+  },
+  "bugs": {
+    "url": "https://github.com/makriman/AI-native-enterprise-software/issues"
+  }
+}

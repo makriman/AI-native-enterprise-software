@@ -1,9 +1,9 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
+import { AUTHENTICATED_ACTOR } from "../lib/actor.js";
 import type { MemoryStore } from "../store/memory-store.js";
 
 const rollbackSchema = z.object({
-  actor: z.string().default("system"),
   reason: z.string().optional()
 });
 
@@ -33,7 +33,7 @@ export async function deploymentRoutes(app: FastifyInstance, store: MemoryStore)
       return reply.code(404).send({ error: "Deployment not found" });
     }
 
-    store.appendDeploymentLog(params.deploymentId, `Rollback initiated by ${parsed.data.actor}.`);
+    store.appendDeploymentLog(params.deploymentId, `Rollback initiated by ${AUTHENTICATED_ACTOR}.`);
     if (parsed.data.reason) {
       store.appendDeploymentLog(params.deploymentId, `Reason: ${parsed.data.reason}`);
     }

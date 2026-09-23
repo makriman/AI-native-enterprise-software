@@ -29,6 +29,7 @@ If you are unsure whether something is security-sensitive, report it privately f
 ## Secrets and Data
 
 - Never commit env files, provider keys, tokens, database dumps, or production user data.
+- Service tokens and the console session key are required environment variables. See `docs/security/secrets.md` and `docs/operations/rotate-secrets.md`.
 - Keep model provider keys and integration credentials outside client bundles.
 - Avoid logging personal data, private content, or raw secrets.
 
