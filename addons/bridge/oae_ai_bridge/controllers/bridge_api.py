@@ -1,3 +1,5 @@
+import hmac
+
 from odoo import http
 from odoo.http import request
 
@@ -5,15 +7,15 @@ from odoo.http import request
 class OaeBridgeApiController(http.Controller):
     def _validate_token(self):
         expected = request.env["ir.config_parameter"].sudo().get_param("oae_ai_bridge.api_token")
-        if not expected:
+        if not isinstance(expected, str) or not expected:
             return False
 
         auth_header = request.httprequest.headers.get("Authorization", "")
         if not auth_header.startswith("Bearer "):
             return False
 
-        incoming = auth_header.replace("Bearer ", "", 1).strip()
-        return incoming == expected
+        incoming = auth_header[7:].strip()
+        return hmac.compare_digest(incoming, expected)
 
     @http.route("/api/oae/snapshot", type="json", auth="user", methods=["POST"], csrf=False)
     def oae_snapshot(self):
